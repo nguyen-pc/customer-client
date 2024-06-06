@@ -24,8 +24,12 @@
         <div class="comments-header">Bình luận của bạn:</div>
         <!-- Ô nhập bình luận -->
         <div class="comment-input-container">
-          <input placeholder="Nhập bình luận của bạn..." class="comment-input" />
-          <button class="btn btn-primary">Gửi bình luận</button>
+          <input
+            v-model="formData.text"
+            placeholder="Nhập bình luận của bạn..."
+            class="comment-input"
+          />
+          <button @click="submitComment" class="btn btn-primary">Gửi bình luận</button>
           <!--v-model="newComment"  @click="submitComment" -->
         </div>
         <ul class="comment-list" v-if="userComments.length">
@@ -51,9 +55,9 @@
 import { useBookStore } from "../../stores/book";
 import { useBorrowStore } from "../../stores/borrow";
 import { useAuthStore } from "../../stores/auth";
-import { useCommentStore } from "../../stores/comment";
+import { useCommentStore, type Comment} from "../../stores/comment";
 import { useRoute } from "vue-router";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed,reactive } from "vue";
 
 const route = useRoute();
 const bookStore = useBookStore();
@@ -63,6 +67,13 @@ const commentStore = useCommentStore();
 const book = ref(null);
 const auth = ref(null);
 const comments = ref([]);
+
+const formData = reactive<Comment>({
+  id:"",
+  user:'',
+  book:"",
+  text:""
+});
 
 const handleBorrow = async () => {
   try {
@@ -93,19 +104,35 @@ const fetchBookData = async () => {
     book.value = fetchedBook;
     auth.value = fetchedAuth;
     comments.value = fetchedComments;
+    formData.book = fetchedBook
+    formData.user = fetchedAuth
 
     // Lọc các bình luận cho người dùng hiện tại và sách hiện tại
     comments.value = fetchedComments.filter((fetchedComment: any) => {
       return (
-        fetchedComment.user._id === auth.value._id &&
         fetchedComment.book === book.value._id
       );
     });
+
+    comments.value = comments.value.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     console.log(comments.value);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 };
+
+console.log(formData)
+
+async function submitComment() {
+  try{
+    const newComment =  await commentStore.createComment(formData)
+    formData.text = "";
+    comments.value.unshift(newComment)
+    fetchBookData()
+  }catch(e){
+    console.log(e)
+  }
+}
 
 onMounted(() => {
   fetchBookData();
