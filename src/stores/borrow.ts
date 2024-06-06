@@ -55,13 +55,12 @@ export const useBorrowStore = defineStore('borrow', {
         throw e.message
       }
     },
-
-    async returnBorrow(borrowId: string, returnData: { actualReturnDate: string }) {
+    async returnBook(borrowId: string, payload: { returnDate: string }) {
       try {
-        const { data } = await useApiPrivate().post(`/api/borrow/return/${borrowId}`, returnData)
-        const index = this.borrows.findIndex((borrow) => borrow.id === borrowId)
-        if (index !== -1) {
-          this.borrows[index] = { ...this.borrows[index], ...data }
+        const { data } = await useApiPrivate().post(`/api/borrow/return/${borrowId}`, payload)
+        const borrowIndex = this.borrows.findIndex((borrow) => borrow.id === borrowId)
+        if (borrowIndex !== -1) {
+          this.borrows[borrowIndex].actualReturnDate = data.actualReturnDate
         }
         return data
       } catch (error: Error | any) {

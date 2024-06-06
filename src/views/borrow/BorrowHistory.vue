@@ -1,12 +1,5 @@
 <template>
-  <div class="p-4 mt-10">
-    <!-- <router-link :to="{ name: 'book:create' }" class="no-underline">
-        <div class="bg-blue-500 p-2 text-white rounded-lg text-center no-underline">
-          <font-awesome-icon :icon="faUserPlus" />
-          Tạo sách
-        </div>
-      </router-link> -->
-  </div>
+  <div class="p-4 mt-10"></div>
   <div>
     <template v-if="!filteredData.length">
       <div>Không có mượn quyển sách nào</div>
@@ -43,7 +36,13 @@
               {{ renderCell(row, column) }}
             </td>
             <td class="p-2 text-gray-800 block md:table-cell">
-              <button @click="returnBook(row)" class="text-blue-500">Trả sách</button>
+              <template v-if="!row.actualReturnDate">
+                <button @click="returnBook(row)" class="text-blue-500">Trả sách</button>
+              </template>
+              <template v-else>
+                <span>Đã trả</span>
+              </template>
+              <!-- <button @click="returnBook(row)" class="text-blue-500">{{}}Trả sách</button> -->
             </td>
           </tr>
         </tbody>
@@ -77,28 +76,24 @@ const columns = [
 
 const fetchBorrow = async () => {
   try {
-    await borrowStore.getUserBorrow("6650c259a20403717fa623c4");
-    // return borrowData;
+    await borrowStore.getUserBorrow(authStore.user.id);
   } catch (error) {
     console.error("Error fetching books:", error);
   }
 };
 
-onMounted(fetchBorrow);
-console.log(borrowStore.allBorrows);
+const fetchUser = async () => {
+  try {
+    await authStore.getUser();
+  } catch (e) {
+    console.log("Error fetching", e);
+  }
+};
 
-// onMounted(async () => {
-//   try {
-//     const bookId = route.params.id;
-//     const fetchedBook = await bookStore.getBookById(bookId);
-//     const fetchAuth = await authStore.getUser();
-//     book.value = fetchedBook;
-//     auth.value = fetchAuth;
-//     console.log(book.value, auth.value);
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//   }
-// });
+onMounted(() => {
+  fetchUser();
+  fetchBorrow();
+});
 
 const filteredData = computed(() => {
   if (!query.value) {
@@ -127,10 +122,11 @@ const renderCell = (row: any, column: any) => {
 
 const returnBook = async (row: any) => {
   try {
-    // Gọi API để trả sách và cập nhật thông tin trả sách
-    await borrowStore.returnBook(row.id);
-
-    // Cập nhật lại danh sách borrow và số lượng sách sau khi trả sách
+    const currentDate = new Date().toISOString(); // Lấy ngày hiện tại
+    const payload = {
+      returnDate: currentDate,
+    };
+    await borrowStore.returnBook(row._id, payload);
     await fetchBorrow();
     await bookStore.getAllBooks();
     alert("Trả sách thành công");

@@ -1,24 +1,46 @@
 <template>
   <div class="container">
-    <div v-if="book" class="book-details flex">
-      <div>
-        <img
-          :src="`http://localhost:3500/uploads/${book.cover}`"
-          alt="Book Cover"
-          class="book-cover"
-        />
+    <div v-if="book">
+      <div class="book-details flex">
+        <div>
+          <img
+            :src="`http://localhost:3500/uploads/${book.cover}`"
+            alt="Book Cover"
+            class="book-cover"
+          />
+        </div>
+        <div class="ml-20">
+          <h1 class="book-title">{{ book.name }}</h1>
+          <p class="book-info">
+            Số quyển còn lại: <span>{{ book.number }}</span>
+          </p>
+          <p class="book-info">
+            Giá: <span>{{ book.unitCost }}</span>
+          </p>
+          <button @click="handleBorrow" class="btn btn-success">Đăng kí mượn</button>
+        </div>
       </div>
-      <div class="ml-20">
-        <h1 class="book-title">{{ book.name }}</h1>
-        <p class="book-info">
-          Số quyển còn lại: <span>{{ book.number }}</span>
-        </p>
-        <p class="book-info">
-          Giá: <span>{{ book.unitCost }}</span>
-        </p>
-        <button @click="handleBorrow" class="btn btn-success">Đăng kí mượn</button>
+      <div class="comments-container">
+        <div class="comments-header">Bình luận của bạn:</div>
+        <!-- Ô nhập bình luận -->
+        <div class="comment-input-container">
+          <input placeholder="Nhập bình luận của bạn..." class="comment-input" />
+          <button class="btn btn-primary">Gửi bình luận</button>
+          <!--v-model="newComment"  @click="submitComment" -->
+        </div>
+        <ul class="comment-list" v-if="userComments.length">
+          <li class="comment-item" v-for="comment in userComments" :key="comment._id">
+            <div class="comment-author">{{ comment.user.username }}</div>
+            <div class="comment-text">{{ comment.text }}</div>
+            <div class="comment-date">
+              {{ new Date(comment.createdAt).toLocaleString() }}
+            </div>
+          </li>
+        </ul>
+        <p v-else>Không có bình luận nào.</p>
       </div>
     </div>
+
     <div v-else class="loading">
       <p>Loading...</p>
     </div>
@@ -29,15 +51,18 @@
 import { useBookStore } from "../../stores/book";
 import { useBorrowStore } from "../../stores/borrow";
 import { useAuthStore } from "../../stores/auth";
+import { useCommentStore } from "../../stores/comment";
 import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const route = useRoute();
 const bookStore = useBookStore();
 const borrowStore = useBorrowStore();
 const authStore = useAuthStore();
+const commentStore = useCommentStore();
 const book = ref(null);
 const auth = ref(null);
+const comments = ref([]);
 
 const handleBorrow = async () => {
   try {
@@ -57,28 +82,36 @@ const handleBorrow = async () => {
     alert("Có lỗi xảy ra khi đăng kí mượn sách.");
   }
 };
-const fetchBooks = async () => {
-  try {
-    await bookStore.getAllBooks();
-  } catch (error) {
-    console.error("Error fetching books:", error);
-  }
-};
 
-onMounted(fetchBooks);
-
-onMounted(async () => {
+const fetchBookData = async () => {
   try {
     const bookId = route.params.id;
     const fetchedBook = await bookStore.getBookById(bookId);
-    const fetchAuth = await authStore.getUser();
+    const fetchedComments = await commentStore.getAllComment();
+    const fetchedAuth = await authStore.getUser();
+
     book.value = fetchedBook;
-    auth.value = fetchAuth;
-    console.log(book.value, auth.value);
+    auth.value = fetchedAuth;
+    comments.value = fetchedComments;
+
+    // Lọc các bình luận cho người dùng hiện tại và sách hiện tại
+    comments.value = fetchedComments.filter((fetchedComment: any) => {
+      return (
+        fetchedComment.user._id === auth.value._id &&
+        fetchedComment.book === book.value._id
+      );
+    });
+    console.log(comments.value);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
+};
+
+onMounted(() => {
+  fetchBookData();
 });
+
+const userComments = computed(() => comments.value);
 </script>
 
 <style scoped>
@@ -131,6 +164,98 @@ onMounted(async () => {
   margin-left: 40px;
 }
 
+/* comment */
+
+/* Bình luận */
+.comments-container {
+  margin-top: 20px;
+}
+
+.comments-header {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 5px;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.comment-author {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Ô nhập bình luận */
+.comment-input-container {
+  margin-top: 20px;
+}
+
+.comment-input {
+  width: 100%;
+  height: 50px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
 .loading {
   text-align: center;
   font-size: 1.5rem;
