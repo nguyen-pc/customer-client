@@ -29,14 +29,14 @@
             placeholder="Nhập bình luận của bạn..."
             class="comment-input"
           />
-          <button @click="submitComment" class="btn btn-primary">Gửi bình luận</button>
+          <button @click="submitComment" class="btn btn-primary ml">Gửi bình luận</button>
           <!--v-model="newComment"  @click="submitComment" -->
         </div>
         <ul class="comment-list" v-if="userComments.length">
           <li class="comment-item" v-for="comment in userComments" :key="comment._id">
             <div class="comment-author">{{ comment.user.username }}</div>
             <div class="comment-text">{{ comment.text }}</div>
-            <div class="comment-date">
+            <div class="comment-date mr">
               {{ new Date(comment.createdAt).toLocaleString() }}
             </div>
           </li>
@@ -58,7 +58,8 @@ import { useAuthStore } from "../../stores/auth";
 import { useCommentStore, type Comment} from "../../stores/comment";
 import { useRoute } from "vue-router";
 import { ref, onMounted, computed,reactive } from "vue";
-
+import { toast, type ToastOptions } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 const route = useRoute();
 const bookStore = useBookStore();
 const borrowStore = useBorrowStore();
@@ -84,13 +85,18 @@ const handleBorrow = async () => {
       estimatedReturnDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày sau
     };
     await borrowStore.createBorrow(borrowData);
-    alert("Đăng kí mượn sách thành công!");
+
+
+    toast.success("Mượn sách thành công!", {
+      autoClose: 2000,
+      position: toast.POSITION.TOP_RIGHT,
+   } as ToastOptions)
+
     if (book.value.number > 0) {
       book.value.number -= 1;
-    }
-  } catch (error) {
+      }
+      } catch (error) {
     console.error("Error creating borrow:", error);
-    alert("Có lỗi xảy ra khi đăng kí mượn sách.");
   }
 };
 
@@ -144,7 +150,7 @@ const userComments = computed(() => comments.value);
 <style scoped>
 .container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -154,6 +160,7 @@ const userComments = computed(() => comments.value);
 
 .book-details {
   text-align: left;
+
 }
 
 .book-title {
@@ -188,7 +195,7 @@ const userComments = computed(() => comments.value);
 }
 
 .ml-20 {
-  margin-left: 40px;
+  margin-left: 100px;
 }
 
 /* comment */
@@ -248,7 +255,7 @@ const userComments = computed(() => comments.value);
 }
 
 .comment-input {
-  width: 100%;
+  width: 60%;
   height: 50px;
   padding: 10px;
   font-size: 1rem;
@@ -257,7 +264,12 @@ const userComments = computed(() => comments.value);
   margin-bottom: 10px;
   resize: none;
 }
-
+.ml{
+  margin-left: 40px;
+}
+.mr{
+  margin-right: 200px;
+}
 .btn {
   padding: 10px 20px;
   font-size: 1rem;

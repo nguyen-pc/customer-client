@@ -1,5 +1,6 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-info">
+  <div class="bg-nav">
+  <nav class="navbar navbar-expand-lg bg-info bg-white m-50">
     <div class="container-fluid">
       <router-link class="navbar-brand" :to="{ name: 'home' }">Navbar</router-link>
       <button
@@ -17,12 +18,32 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link :to="{ name: 'home' }" class="nav-link" aria-current="page"
-              >Home</router-link
+              >Trang chủ</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'home' }" class="nav-link" aria-current="page"
+              >Tin Sách</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'home' }" class="nav-link" aria-current="page"
+              >Tác giả</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link :to="{ name: 'home' }" class="nav-link" aria-current="page"
+              >Liên hệ</router-link
             >
           </li>
         </ul>
+        <div class="search">
+          <input placeholder="Tìm kiếm ..." class="nav-input"/>
+          <div class="btn-search"><img class="img-search" src="../assets/images/search.png"/></div>
+        </div>
         <ul class="navbar-nav mb-2 mb-lg-0">
           <li v-if="isAuthenticated" class="nav-item dropdown">
+            
             <a
               class="nav-link dropdown-toggle"
               href="#"
@@ -30,6 +51,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
+              <img src="../assets/images/user.png" class="img"/>
               {{ user.username }}
             </a>
             <ul class="dropdown-menu ml-20">
@@ -70,6 +92,7 @@
       </div>
     </div>
   </nav>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -102,7 +125,58 @@ async function logout() {
 </script>
 
 <style scoped>
+.nav-link{
+  font-weight: 600;
+  font-size: 17px;
+}
+.m-50{
+  margin-left: 50px;
+  margin-right: 50px;
+}
+.bg-white{
+  background-color: #e9f4ea!important;
+}
+.bg-nav{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #e9f4ea!important;
+  border-bottom: 2px solid green;
+}
+
+.bg-white{
+  background-color: #e9f4ea!important;
+}
+
 .ml-20 {
-  left: -58px !important;
+  left: -130px !important;
+}
+.img{
+  background-color: #e9f4ea;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.search{
+ 
+  margin-right: 20px;
+  display: flex;
+}
+.nav-input{
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid gray;
+  width: 260px;
+  height: 40px;
+}
+.btn-search{
+
+  cursor: pointer;
+  margin-top: 5px;
+  margin-left: -30px;
+}
+
+.img-search{
+  width: 15px;
+  height: 15px;
 }
 </style>
