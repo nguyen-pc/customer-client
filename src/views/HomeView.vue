@@ -63,7 +63,7 @@ import AuthorView from "../components/AuthorView.vue"
     </div>
   </div>
 
-  <Footer />
+  <!-- <Footer /> -->
 </template>
 
 <style scoped>

@@ -11,6 +11,8 @@
         </div>
         <div class="ml-20">
           <h1 class="book-title">{{ book.name }}</h1>
+          <p class="book-info">Tác giả: <span class="book-author">{{ book.author.name }}</span></p>
+         
           <p class="book-info">
             Số quyển còn lại: <span>{{ book.number }}</span>
           </p>
@@ -127,7 +129,7 @@ const fetchBookData = async () => {
   }
 };
 
-console.log(formData)
+console.log(book)
 
 async function submitComment() {
   try{
@@ -164,7 +166,12 @@ const userComments = computed(() => comments.value);
 }
 
 .book-title {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+.book-author{
+  font-size: 1.5rem;
   margin-bottom: 20px;
   color: #333;
 }

@@ -8,7 +8,7 @@
       />
       <div class="card-body">
         <h5 class="card-title">{{ data.name }}</h5>
-        <h5 class="card-title">{{ data.cover }}</h5>
+        <!-- <h5 class="card-title">{{ data.cover }}</h5> -->
         <p class="card-text">Số lượng: {{ data.number }}</p>
         <div class="flex">
           <button class="btn btn-primary">Giá: {{ data.unitCost }}</button>

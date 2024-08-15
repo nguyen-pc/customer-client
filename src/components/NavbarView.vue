@@ -2,7 +2,7 @@
   <div class="bg-nav">
   <nav class="navbar navbar-expand-lg bg-info bg-white m-50">
     <div class="container-fluid">
-      <router-link class="navbar-brand" :to="{ name: 'home' }">Navbar</router-link>
+      <router-link class="navbar-brand" :to="{ name: 'home' }"><img class="logo" src="../assets/images/logo.png"/></router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -125,6 +125,11 @@ async function logout() {
 </script>
 
 <style scoped>
+.logo{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
 .nav-link{
   font-weight: 600;
   font-size: 17px;

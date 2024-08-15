@@ -1,10 +1,11 @@
-<template>
-  <div class="p-4 mt-10"></div>
+<template >
+  <div class="p-5 mt-10">
   <div>
     <template v-if="!filteredData.length">
       <div>Không có mượn quyển sách nào</div>
     </template>
     <template v-else>
+      <div class="title">Lịch sử mượn sách</div>
       <table class="min-w-full border-collapse block md:table">
         <thead class="block md:table-header-group">
           <tr
@@ -49,6 +50,7 @@
       </table>
     </template>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -138,6 +140,13 @@ const returnBook = async (row: any) => {
 </script>
 
 <style scoped>
+.title{
+    font-size: 30px;
+    font-weight: 600;
+    color: #228B22;
+    margin-bottom: 25px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
