@@ -84,6 +84,7 @@
 
 .footer_text{
   margin-bottom: 20px;
+  cursor: pointer;
 }
 .mb-20{
   margin-top: -35px;

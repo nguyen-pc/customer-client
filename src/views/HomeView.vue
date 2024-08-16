@@ -50,7 +50,7 @@ import AuthorView from "../components/AuthorView.vue"
   <div class="m-50">
     <div class="b-green">Các sách mới</div>
     <div class="mt-20 flex">
-      <CardView />
+      <CardView/>
     </div>
   </div>
 

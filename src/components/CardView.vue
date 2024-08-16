@@ -1,4 +1,4 @@
-<template>
+<template >
   <div v-for="data in filteredData" :key="data.id">
     <div class="card" style="width: 18rem">
       <img
