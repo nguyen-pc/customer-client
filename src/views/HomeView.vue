@@ -49,9 +49,11 @@ import AuthorView from "../components/AuthorView.vue"
   <!-- Book -->
   <div class="m-50">
     <div class="b-green">Các sách mới</div>
-    <div class="mt-20 flex">
-      <CardView/>
+      <div class="mt-20 flex ">
+        <CardView/>
     </div>
+   
+    
   </div>
 
   <!-- introduction -->

@@ -1,22 +1,29 @@
 <template >
-  <div v-for="data in filteredData" :key="data.id">
-    <div class="card" style="width: 18rem">
-      <img
-        :src="`http://localhost:3500/uploads/${data.cover}`"
-        class="card-img-top"
-        alt="card"
-      />
-      <div class="card-body">
-        <h5 class="card-title">{{ data.name }}</h5>
-        <!-- <h5 class="card-title">{{ data.cover }}</h5> -->
-        <p class="card-text">Số lượng: {{ data.number }}</p>
-        <div class="flex">
-          <button class="btn btn-primary">Giá: {{ data.unitCost }}</button>
-          <button @click="borrowBook(data)" class="btn btn-primary">Xem chi tiết</button>
+  <div  class="col-lg-12">
+    <div class="row g-4">
+    <div v-for="data in filteredData" :key="data.id" class="col-md-6 col-lg-4 pr-2"> 
+
+      <div class="card" style="width: 18rem">
+        <img
+          :src="`http://localhost:3500/uploads/${data.cover}`"
+          class="card-img-top"
+          alt="card"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ data.name }}</h5>
+          <!-- <h5 class="card-title">{{ data.cover }}</h5> -->
+          <p class="card-text">Số lượng: {{ data.number }}</p>
+          <div class="flex">
+            <button class="btn btn-primary">Giá: {{ data.unitCost }}</button>
+            <button @click="borrowBook(data)" class="btn btn-primary">Xem chi tiết</button>
+          </div>
         </div>
       </div>
     </div>
+  
   </div>
+  </div>
+
 </template>
 
 <script setup lang="ts">

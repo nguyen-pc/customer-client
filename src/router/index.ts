@@ -45,8 +45,12 @@ const router = createRouter({
       name: 'search',
       component: () => import('../views/search/SearchView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/:pathMath(.*)',
+      name: 'notfound',
+      component: () => import('../views/NotFound.vue')
     }
-
   ]
 })
 
