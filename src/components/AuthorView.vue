@@ -14,16 +14,21 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import { useAuthorStore } from "../../src/stores/author";
 
+const route = useRoute()
 const router = useRouter();
 const authorStore = useAuthorStore();
 const currentIndex = ref(0);
+
+const pageNumber = computed(() => Number(route.query.pageNumber) || 1);
+const limit = 10;
+
 const fetchBooks = async () => {
   try {
-    await authorStore.getAllAuthor();
+    await authorStore.getAllAuthor(pageNumber.value - 1, limit);
   } catch (error) {
     console.error("Error fetching books:", error);
   }
@@ -31,10 +36,10 @@ const fetchBooks = async () => {
 
 onMounted(fetchBooks);
 const filteredData = computed(() => {
-  return authorStore.allAuthor;
+  return authorStore.allAuthor.data;
 });
 
-console.log(filteredData)
+console.log(filteredData.value)
 
 const slide = (direction: number) => {
   const totalItems = filteredData.value.length;

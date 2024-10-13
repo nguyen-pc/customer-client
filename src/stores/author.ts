@@ -9,12 +9,19 @@ export interface Author {
 
 export interface State {
   authors: Author[]
+  totalUsers: number
+  totalPages: number
+  currentPage: number
+  
 }
 
 export const useAuthorStore = defineStore('author', {
   state: (): State => {
     return {
-      authors: [] as Author[]
+      authors: [] as Author[],
+      totalUsers: 0,
+      totalPages: 0,
+      currentPage: 1,
     }
   },
 
@@ -23,9 +30,17 @@ export const useAuthorStore = defineStore('author', {
   },
 
   actions: {
-    async getAllAuthor() {
+    async getAllAuthor(pageNumber: number, limit: number) {
       try {
-        const { data } = await useApi().get('/api/author/allAuthor')
+        const { data } = await useApi().get('/api/author/allAuthor', {
+          params: {
+            pageNumber: pageNumber, // pass the pageNumber
+            limit: limit // pass the limit
+          }
+        })
+        this.totalUsers = data.totalUsers
+        this.totalPages = data.totalPages
+        this.currentPage = data.currentPage
         this.authors = data
         return data
       } catch (error: Error | any) {
