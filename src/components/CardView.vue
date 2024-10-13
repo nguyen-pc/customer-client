@@ -47,8 +47,7 @@ const fetchBooks = async () => {
 
 onMounted(fetchBooks);
 const filteredData = computed(() => {
-  console.log(bookStore.allBooks.data);
-  return bookStore.allBooks.data;
+  return (bookStore.allBooks as any).data;
 });
 
 const borrowBook = (book: any) => {
