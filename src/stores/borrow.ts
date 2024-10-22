@@ -3,6 +3,8 @@ import { useApi, useApiPrivate } from '../composables/useApi'
 
 export interface Borrow {
   id: string
+  email: String
+  bookName: String
   user: string
   book: string
   borrowedDay: Date
@@ -39,6 +41,7 @@ export const useBorrowStore = defineStore('borrow', {
     async createBorrow(borrowData: Borrow) {
       try {
         const { data } = await useApi().post('/api/borrow/create', borrowData)
+        console.log(borrowData)
         this.borrows.push(data)
         return data
       } catch (error: Error | any) {

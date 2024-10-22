@@ -4,6 +4,8 @@
       <div v-for="data in filteredData" :key="data.id" class="col-md-6 col-lg-4 pr-2">
         <div class="card" style="width: 18rem">
           <img
+            width="200px"
+            height="350px"
             :src="`http://localhost:3500/uploads/${data.cover}`"
             class="card-img-top"
             alt="card"

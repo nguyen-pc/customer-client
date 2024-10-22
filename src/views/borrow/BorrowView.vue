@@ -81,6 +81,8 @@ const formData = reactive<Comment>({
 const handleBorrow = async () => {
   try {
     const borrowData = {
+      email: auth.value.email,
+      bookName: book.value.name,
       user: auth.value._id, // Thay thế bằng ID người dùng hiện tại
       book: book.value._id,
       borrowedDay: new Date(),

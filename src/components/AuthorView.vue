@@ -1,6 +1,6 @@
 <template>
   <div class="slider_container">
-    <div class="slider">
+    <div class="slider" ref="sliderRef">
       <div v-for="data in filteredData" :key="data.id" class="slider-item">
         <div class="item">
           <img src="../assets/images/author.png" class="img" />
@@ -8,7 +8,9 @@
         </div>
       </div>
     </div>
-    <button class="prev" @click="slide(-1)">&#10094;</button>
+    <button class="prev" @click="slide(-1)" :disabled="currentIndex === 0">
+      &#10094;
+    </button>
     <button class="next" @click="slide(1)">&#10095;</button>
   </div>
 </template>
@@ -17,16 +19,18 @@
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, computed } from "vue";
 import { useAuthorStore } from "../../src/stores/author";
+import { watch } from "vue";
 
 const route = useRoute();
 const router = useRouter();
 const authorStore = useAuthorStore();
 const currentIndex = ref(0);
+const sliderRef = ref<HTMLElement | null>(null);
 
 const pageNumber = computed(() => Number(route.query.pageNumber) || 1);
 const limit = 10;
 
-const fetchBooks = async () => {
+const fetchAuthor = async () => {
   try {
     await authorStore.getAllAuthor(pageNumber.value - 1, limit);
   } catch (error) {
@@ -34,7 +38,7 @@ const fetchBooks = async () => {
   }
 };
 
-onMounted(fetchBooks);
+onMounted(fetchAuthor);
 const filteredData = computed(() => {
   return (authorStore.allAuthor as any).data;
 });
@@ -42,10 +46,18 @@ const filteredData = computed(() => {
 console.log(filteredData.value);
 
 const slide = (direction: number) => {
-  const totalItems = filteredData.value.length;
-  currentIndex.value = (currentIndex.value + direction + totalItems) % totalItems;
+  const newIndex = currentIndex.value + direction;
+  console.log(newIndex);
+  if (newIndex >= 0 && newIndex <= filteredData.value.length - 3) {
+    currentIndex.value = newIndex;
+  }
 };
 
+watch(currentIndex, (newIndex) => {
+  if (sliderRef.value) {
+    sliderRef.value.style.transform = `translateX(-${newIndex * 33.33}%)`;
+  }
+});
 // const borrowBook = (book: any) => {
 //   router.push({ name: "Borrow", params: { id: book._id } });
 // };
@@ -61,7 +73,6 @@ const slide = (direction: number) => {
 .slider {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  /* transform: translateX(-100%); */
 }
 .slider-item {
   flex: 0 0 33.33%;
@@ -70,19 +81,14 @@ const slide = (direction: number) => {
   padding: 20px;
   text-align: center;
 }
-.containers {
-  display: flex;
-  flex: row;
-}
-
 .img {
   width: 160px;
   height: 160px;
   border-radius: 50%;
+  object-fit: cover;
 }
 .item {
   margin-top: 30px;
-  margin-right: 80px;
   align-items: center;
   justify-content: center;
 }
@@ -90,6 +96,8 @@ const slide = (direction: number) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
 .prev,
@@ -104,19 +112,29 @@ const slide = (direction: number) => {
   font-weight: bold;
   font-size: 18px;
   transition: 0.6s ease;
-  border: 1px solid white;
+  border: none;
   border-radius: 0 3px 3px 0;
   user-select: none;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .next {
   right: 0;
-  border-radius: 3px 3px 3px 3px;
+  border-radius: 3px 0 0 3px;
+}
+
+.prev {
+  left: 0;
 }
 
 .prev:hover,
 .next:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.prev:disabled,
+.next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
