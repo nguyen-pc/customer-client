@@ -41,21 +41,46 @@ const searchQuery = ref(route.query.q || "");
 const results = ref([]);
 const bookStore = useBookStore();
 
-// Fetch all books once when the component is mounted
+const pageNumber = computed(() => Number(route.query.pageNumber) || 1);
+const limit = 10;
 const fetchBooks = async () => {
   try {
-    await bookStore.getAllBooks(); // Assuming this action fetches books and stores them in the store
+    await bookStore.getAllBooks(pageNumber.value - 1, limit);
+    console.log("bookStore.allBooks:", bookStore.allBooks);
   } catch (error) {
     console.error("Error fetching books:", error);
   }
 };
 
+onMounted(fetchBooks);
+
+// Fetch all books once when the component is mounted
+// const fetchBooks = async () => {
+//   try {
+//     await bookStore.getAllBooks(); // Assuming this action fetches books and stores them in the store
+//   } catch (error) {
+//     console.error("Error fetching books:", error);
+//   }
+// };
+
 // Compute filtered results based on the search query
 const filteredResults = computed(() => {
-  if (!searchQuery.value) {
+  let books = [];
+  if (typeof bookStore.allBooks === "object" && bookStore.allBooks !== null) {
+    if (Array.isArray(bookStore.allBooks)) {
+      books = bookStore.allBooks;
+    } else if (Array.isArray(bookStore.allBooks.data)) {
+      books = bookStore.allBooks.data;
+    } else {
+      console.error("Unexpected structure of bookStore.allBooks:", bookStore.allBooks);
+      return [];
+    }
+  } else {
+    console.error("bookStore.allBooks is not an object:", bookStore.allBooks);
     return [];
   }
-  return bookStore.allBooks.filter((book) =>
+
+  return books.filter((book: any) =>
     book.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
