@@ -16,6 +16,11 @@ const router = createRouter({
         },
         { path: ':id', name: 'Borrow', component: () => import('../views/borrow/BorrowView.vue') },
         {
+          path: '/author/:id',
+          name: 'Author',
+          component: () => import('../views/Author/AuthorView.vue')
+        },
+        {
           path: '/borrow',
           name: 'BorrowHistory',
           component: () => import('../views/borrow/BorrowHistory.vue')

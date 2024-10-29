@@ -1,8 +1,8 @@
 <template>
   <div class="slider_container">
     <div class="slider" ref="sliderRef">
-      <div v-for="data in filteredData" :key="data.id" class="slider-item">
-        <div class="item">
+      <div v-for="data in filteredData" :key="data._id" class="slider-item">
+        <div class="item" @click="detailAuthor(data)">
           <img src="../assets/images/author.png" class="img" />
           <div class="author_item">{{ data.name }}</div>
         </div>
@@ -43,7 +43,9 @@ const filteredData = computed(() => {
   return (authorStore.allAuthor as any).data;
 });
 
-console.log(filteredData.value);
+const detailAuthor = (data: any) => {
+  router.push({ name: "Author", params: { id: data._id } });
+};
 
 const slide = (direction: number) => {
   const newIndex = currentIndex.value + direction;

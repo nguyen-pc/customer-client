@@ -5,6 +5,7 @@ export interface Author {
   id: string
   name: string
   address: string
+  detail: string
 }
 
 export interface State {
@@ -12,7 +13,6 @@ export interface State {
   totalUsers: number
   totalPages: number
   currentPage: number
-  
 }
 
 export const useAuthorStore = defineStore('author', {
@@ -21,7 +21,7 @@ export const useAuthorStore = defineStore('author', {
       authors: [] as Author[],
       totalUsers: 0,
       totalPages: 0,
-      currentPage: 1,
+      currentPage: 1
     }
   },
 
@@ -47,6 +47,16 @@ export const useAuthorStore = defineStore('author', {
         throw error.message
       }
     },
+
+    async getAuthorById(id: string) {
+      try {
+        console.log(id)
+        const { data } = await useApi().get(`/api/author/getauthor/${id}`)
+        return data
+      } catch (error: Error | any) {
+        throw error.message
+      }
+    }
 
     // async createComment(CommentData: Comment) {
     //   try {
