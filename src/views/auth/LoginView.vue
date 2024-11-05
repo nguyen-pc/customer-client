@@ -24,6 +24,10 @@
             />
           </div>
           <button type="submit" class="btn btn-success">Login</button>
+          <div class="sign-up">
+            Don't have an account?
+            <span @click="signUp" class="sign-up-child">Sign Up</span>
+          </div>
         </form>
       </div>
     </div>
@@ -34,6 +38,8 @@
 import { useAuthStore, type LoginData } from '../../stores/auth';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { toast, type ToastOptions } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -45,12 +51,24 @@ const loginData = reactive<LoginData>({
 
 const errorMessage = ref<string>("")
 
+const signUp = () => {
+  router.push({ name: "register" });
+};
+
 async function submit(){
   await authStore.login(loginData)
     .then(res => {
-      router.replace({name: "user"})
+      toast.success("Đăng nhập thành công!", {
+      autoClose: 2000,
+      position: toast.POSITION.BOTTOM_RIGHT,
+      } as ToastOptions)
+      router.replace({name: "home"})
     })
     .catch(err => {
+      toast.error("Email hoặc mật khẩu chưa đúng!", {
+         autoClose: 2000,
+        position: toast.POSITION.BOTTOM_RIGHT,
+     } as ToastOptions);
       errorMessage.value = err.message
     })
 }
@@ -60,5 +78,13 @@ async function submit(){
 #login .card {
   max-width: 40vw;
   margin: auto;
+}
+
+.sign-up {
+  margin-top: 10px;
+}
+.sign-up-child {
+  color: green;
+  cursor: pointer;
 }
 </style>
