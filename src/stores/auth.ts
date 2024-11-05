@@ -30,6 +30,13 @@ export interface RegisterData {
   password_confirm: string
 }
 
+export interface EditData {
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+}
+
 export const useAuthStore = defineStore('auth', {
   state: (): State => {
     return {
@@ -91,6 +98,23 @@ export const useAuthStore = defineStore('auth', {
         this.accessToken = ''
         this.user = {} as User
         return data
+      } catch (error: Error | any) {
+        throw error.message
+      }
+    },
+
+    async getUserById(userId: string) {
+      try {
+        const { data } = await useApiPrivate().get(`/api/auth/user/${userId}`)
+        return data
+      } catch (error: Error | any) {
+        throw error.message
+      }
+    },
+
+    async updateUser(userId: string, userData: any){
+      try {
+        await useApiPrivate().put(`/api/auth/user/${userId}`, userData)
       } catch (error: Error | any) {
         throw error.message
       }
