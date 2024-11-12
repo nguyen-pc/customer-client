@@ -46,7 +46,7 @@
               autocomplete="off"
             />
           </div>
-          <button type="submit" class="btn btn-success">Cập nhật</button>
+          <button type="submit" class="btn btn-success w-[30%]">Cập nhật</button>
         </form>
       </div>
     </div>

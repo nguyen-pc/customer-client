@@ -1,56 +1,56 @@
-<template >
+<template>
   <div class="p-5 mt-10">
-  <div>
-    <template v-if="!filteredData.length">
-      <div>Không có mượn quyển sách nào</div>
-    </template>
-    <template v-else>
-      <div class="title">Lịch sử mượn sách</div>
-      <table class="min-w-full border-collapse block md:table">
-        <thead class="block md:table-header-group">
-          <tr
-            class="border border-gray-300 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative"
-          >
-            <th
-              v-for="column in columns"
-              :key="column.key"
-              class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell"
+    <div>
+      <template v-if="!filteredData.length">
+        <div>Không có mượn quyển sách nào</div>
+      </template>
+      <template v-else>
+        <div class="title">Lịch sử mượn sách</div>
+        <table class="min-w-full border-collapse block md:table">
+          <thead class="block md:table-header-group">
+            <tr
+              class="border border-gray-300 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative"
             >
-              {{ column.title }}
-            </th>
-            <th class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell">
-              Hành động
-            </th>
-          </tr>
-        </thead>
-        <tbody class="block md:table-row-group">
-          <tr
-            v-for="row in filteredData"
-            :key="row.id"
-            class="bg-gray-100 border border-gray-300 md:border-none block md:table-row"
-          >
-            <td
-              v-for="column in columns"
-              :key="column.key"
-              class="p-2 text-gray-800 block md:table-cell"
+              <th
+                v-for="column in columns"
+                :key="column.key"
+                class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell"
+              >
+                {{ column.title }}
+              </th>
+              <th class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell">
+                Hành động
+              </th>
+            </tr>
+          </thead>
+          <tbody class="block md:table-row-group">
+            <tr
+              v-for="row in filteredData"
+              :key="row.id"
+              class="bg-gray-100 border border-gray-300 md:border-none block md:table-row"
             >
-              {{ renderCell(row, column) }}
-            </td>
-            <td class="p-2 text-gray-800 block md:table-cell">
-              <template v-if="!row.actualReturnDate">
-                <button @click="returnBook(row)" class="text-blue-500">Trả sách</button>
-              </template>
-              <template v-else>
-                <span>Đã trả</span>
-              </template>
-              <!-- <button @click="returnBook(row)" class="text-blue-500">{{}}Trả sách</button> -->
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </template>
+              <td
+                v-for="column in columns"
+                :key="column.key"
+                class="p-2 text-gray-800 block md:table-cell"
+              >
+                {{ renderCell(row, column) }}
+              </td>
+              <td class="p-2 text-gray-800 block md:table-cell">
+                <template v-if="!row.actualReturnDate">
+                  <button @click="returnBook(row)" class="return-btn">Trả sách</button>
+                </template>
+                <template v-else>
+                  <span>Đã trả</span>
+                </template>
+                <!-- <button @click="returnBook(row)" class="text-blue-500">{{}}Trả sách</button> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -108,6 +108,16 @@ const filteredData = computed(() => {
   });
 });
 
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
 const renderCell = (row: any, column: any) => {
   const keys = column.dataIndex.split(".");
   let value = row;
@@ -115,6 +125,9 @@ const renderCell = (row: any, column: any) => {
     keys.forEach((key: any) => {
       value = value[key];
     });
+    if (["borrowedDay", "estimatedReturnDate", "actualReturnDate"].includes(column.key)) {
+      return formatDate(value);
+    }
   } catch (error) {
     console.error("Error accessing value for column:", column, "row:", row);
     value = ""; // Hoặc giá trị mặc định nào đó nếu cần thiết
@@ -130,7 +143,7 @@ const returnBook = async (row: any) => {
     };
     await borrowStore.returnBook(row._id, payload);
     await fetchBorrow();
-    await bookStore.getAllBooks();
+    await bookStore.getAllBooks(1, 10);
     alert("Trả sách thành công");
   } catch (error) {
     console.error("Error returning book:", error);
@@ -140,11 +153,21 @@ const returnBook = async (row: any) => {
 </script>
 
 <style scoped>
-.title{
-    font-size: 30px;
-    font-weight: 600;
-    color: #228B22;
-    margin-bottom: 25px;
+.return-btn {
+  background-color: #228b22;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.title {
+  font-size: 30px;
+  font-weight: 600;
+  color: #228b22;
+  margin-bottom: 25px;
 }
 
 table {
