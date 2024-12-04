@@ -17,7 +17,7 @@
             Số quyển còn lại: <span>{{ book.number }}</span>
           </p>
           <p class="book-info">
-            Giá: <span>{{ book.unitCost }}</span>
+            Giá: <span>{{ book.unitCost }} VND</span>
           </p>
           <button @click="handleBorrow" class="btn btn-success">Đăng kí mượn</button>
         </div>

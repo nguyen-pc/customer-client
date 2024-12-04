@@ -18,9 +18,9 @@
               >
                 {{ column.title }}
               </th>
-              <th class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell">
+              <!-- <th class="bg-gray-200 p-2 text-gray-600 font-bold block md:table-cell">
                 Hành động
-              </th>
+              </th> -->
             </tr>
           </thead>
           <tbody class="block md:table-row-group">
@@ -33,18 +33,17 @@
                 v-for="column in columns"
                 :key="column.key"
                 class="p-2 text-gray-800 block md:table-cell"
-              >
-                {{ renderCell(row, column) }}
-              </td>
-              <td class="p-2 text-gray-800 block md:table-cell">
-                <template v-if="!row.actualReturnDate">
-                  <button @click="returnBook(row)" class="return-btn">Trả sách</button>
-                </template>
-                <template v-else>
-                  <span>Đã trả</span>
-                </template>
-                <!-- <button @click="returnBook(row)" class="text-blue-500">{{}}Trả sách</button> -->
-              </td>
+                v-html="renderCell(row, column)"
+              ></td>
+              <!-- <td class="p-2 text-gray-800 block md:table-cell"> -->
+              <!-- <template v-if="!row.actualReturnDate"> -->
+              <!-- <button @click="returnBook(row)" class="return-btn">Trả sách</button> -->
+              <!-- </template> -->
+              <!-- <template v-else> -->
+              <!-- <span>Đã trả</span> -->
+              <!-- </template> -->
+              <!-- <button @click="returnBook(row)" class="text-blue-500">{{}}Trả sách</button> -->
+              <!-- </td> -->
             </tr>
           </tbody>
         </table>
@@ -59,6 +58,7 @@ import { ref, onMounted, computed } from "vue";
 import { useBorrowStore } from "../../stores/borrow";
 import { useAuthStore } from "@/stores/auth";
 import { useBookStore } from "@/stores/book";
+import { title } from "process";
 
 const route = useRoute();
 const bookStore = useBookStore();
@@ -74,6 +74,7 @@ const columns = [
   { title: "Ngày mượn", dataIndex: "borrowedDay", key: "borrowedDay" },
   { title: "Hạn trả", dataIndex: "estimatedReturnDate", key: "estimatedReturnDate" },
   { title: "Ngày đã trả", dataIndex: "actualReturnDate", key: "actualReturnDate" },
+  { title: "Trạng thái", dataIndex: "status", key: "status" },
 ];
 
 const fetchBorrow = async () => {
@@ -128,6 +129,9 @@ const renderCell = (row: any, column: any) => {
     if (["borrowedDay", "estimatedReturnDate", "actualReturnDate"].includes(column.key)) {
       return formatDate(value);
     }
+    if (column.key === "status") {
+      return `<span class="status-badge ${value.toLowerCase()}">${value}</span>`;
+    }
   } catch (error) {
     console.error("Error accessing value for column:", column, "row:", row);
     value = ""; // Hoặc giá trị mặc định nào đó nếu cần thiết
@@ -152,7 +156,37 @@ const returnBook = async (row: any) => {
 };
 </script>
 
-<style scoped>
+<style>
+.status-badge {
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  display: inline-block !important;
+  text-align: center !important;
+}
+.borrowed {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.returned {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+.approved {
+  background-color: #fee2e2 !important;
+  color: #1b6999 !important;
+}
+
+.pending {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
 .return-btn {
   background-color: #228b22;
   color: white;

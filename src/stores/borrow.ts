@@ -1,6 +1,14 @@
 import { defineStore } from 'pinia'
 import { useApi, useApiPrivate } from '../composables/useApi'
 
+export enum BorrowStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  RETURNED = 'returned',
+  REJECTED = 'rejected'
+}
+
+
 export interface Borrow {
   id: string
   email: String
@@ -10,6 +18,8 @@ export interface Borrow {
   borrowedDay: Date
   estimatedReturnDate: Date
   actualReturnDate?: Date
+  status: BorrowStatus
+
 }
 
 export interface State {
@@ -40,7 +50,11 @@ export const useBorrowStore = defineStore('borrow', {
 
     async createBorrow(borrowData: Borrow) {
       try {
-        const { data } = await useApi().post('/api/borrow/create', borrowData)
+        const payload = {
+          ...borrowData,
+          status: BorrowStatus.PENDING  // Luôn set trạng thái mặc định là pending
+        };
+        const { data } = await useApi().post('/api/borrow/create', payload)
         console.log(borrowData)
         this.borrows.push(data)
         return data
